@@ -1,0 +1,20 @@
+App:
+  Environment: "development" # development,staging,production
+
+Server:
+  Port: "8080"
+  Debug: true
+  TimeZone: "Asia/Jakarta" # follows IANA Time Zone Database
+
+JWT:
+  AccessTokenSecret: ""
+  AccessTokenTTL: 1800 # in seconds
+  RefreshTokenSecret: ""
+  RefreshTokenTTL: 21600 # in seconds
+
+Database:
+  Host: "localhost"
+  Port: "5432"
+  User: ""
+  Password: ""
+  Name: ""
