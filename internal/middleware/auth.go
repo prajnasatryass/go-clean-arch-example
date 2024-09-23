@@ -6,9 +6,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"tic-be/config"
-	"tic-be/pkg/apperror"
-	"tic-be/pkg/appresponse"
+	"github.com/prajnasatryass/tic-be/config"
+	"github.com/prajnasatryass/tic-be/pkg/apperror"
+	"github.com/prajnasatryass/tic-be/pkg/appresponse"
 	"time"
 )
 

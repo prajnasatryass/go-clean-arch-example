@@ -2,7 +2,7 @@ package v1
 
 import (
 	"github.com/labstack/echo/v4"
-	"tic-be/internal/user/domain"
+	"github.com/prajnasatryass/tic-be/internal/user/domain"
 )
 
 type userController struct {

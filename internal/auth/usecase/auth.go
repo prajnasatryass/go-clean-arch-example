@@ -3,12 +3,11 @@ package usecase
 import (
 	"database/sql"
 	"errors"
-	"tic-be/config"
-	"tic-be/internal/auth/domain"
-	userDomain "tic-be/internal/user/domain"
-	"tic-be/pkg/apperror"
-	"tic-be/pkg/hasher"
-	"tic-be/pkg/tokenutil"
+	"github.com/prajnasatryass/tic-be/config"
+	"github.com/prajnasatryass/tic-be/internal/auth/domain"
+	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
+	"github.com/prajnasatryass/tic-be/pkg/apperror"
+	"github.com/prajnasatryass/tic-be/pkg/hasher"
 	"time"
 )
 
@@ -24,14 +23,14 @@ var (
 type authUsecase struct {
 	authRepository domain.AuthRepository
 	userRepository userDomain.UserRepository
-	cfg            config.Config
+	jwtCfg         config.JWTConfig
 }
 
-func NewAuthUsecase(authRepository domain.AuthRepository, userRepository userDomain.UserRepository, cfg config.Config) domain.AuthUsecase {
+func NewAuthUsecase(authRepository domain.AuthRepository, userRepository userDomain.UserRepository, jwtCfg config.JWTConfig) domain.AuthUsecase {
 	return &authUsecase{
 		authRepository: authRepository,
 		userRepository: userRepository,
-		cfg:            cfg,
+		jwtCfg:         jwtCfg,
 	}
 }
 
@@ -48,12 +47,12 @@ func (au *authUsecase) Login(email, password string) (domain.LoginResponse, erro
 		return domain.LoginResponse{}, apperror.Unauthorized(errPasswordIncorrect)
 	}
 
-	accessToken, err := tokenutil.CreateAccessToken(&user, au.cfg.JWT.AccessTokenSecret, au.cfg.JWT.AccessTokenTTL)
+	accessToken, err := au.authRepository.CreateAccessToken(&user, au.jwtCfg.AccessTokenSecret, au.jwtCfg.AccessTokenTTL)
 	if err != nil {
 		return domain.LoginResponse{}, apperror.InternalServerError(err)
 	}
 
-	refreshToken, err := tokenutil.CreateRefreshToken(&user, au.cfg.JWT.RefreshTokenSecret, au.cfg.JWT.RefreshTokenTTL)
+	refreshToken, err := au.authRepository.CreateRefreshToken(&user, au.jwtCfg.RefreshTokenSecret, au.jwtCfg.RefreshTokenTTL)
 	if err != nil {
 		return domain.LoginResponse{}, apperror.InternalServerError(err)
 	}
@@ -61,7 +60,7 @@ func (au *authUsecase) Login(email, password string) (domain.LoginResponse, erro
 	err = au.authRepository.StoreRefreshToken(&domain.RefreshTokenRecord{
 		Token:       refreshToken,
 		UserID:      user.ID,
-		IgnoreAfter: time.Now().Add(time.Duration(au.cfg.JWT.RefreshTokenTTL) * time.Second),
+		IgnoreAfter: time.Now().Add(time.Duration(au.jwtCfg.RefreshTokenTTL) * time.Second),
 	})
 	if err != nil {
 		return domain.LoginResponse{}, apperror.InternalServerError(err)
@@ -90,12 +89,12 @@ func (au *authUsecase) Refresh(refreshToken string) (domain.RefreshResponse, err
 		return domain.RefreshResponse{}, err
 	}
 
-	newAccessToken, err := tokenutil.CreateAccessToken(&user, au.cfg.JWT.AccessTokenSecret, au.cfg.JWT.AccessTokenTTL)
+	newAccessToken, err := au.authRepository.CreateAccessToken(&user, au.jwtCfg.AccessTokenSecret, au.jwtCfg.AccessTokenTTL)
 	if err != nil {
 		return domain.RefreshResponse{}, apperror.InternalServerError(err)
 	}
 
-	newRefreshToken, err := tokenutil.CreateRefreshToken(&user, au.cfg.JWT.RefreshTokenSecret, au.cfg.JWT.RefreshTokenTTL)
+	newRefreshToken, err := au.authRepository.CreateRefreshToken(&user, au.jwtCfg.RefreshTokenSecret, au.jwtCfg.RefreshTokenTTL)
 	if err != nil {
 		return domain.RefreshResponse{}, apperror.InternalServerError(err)
 	}
@@ -103,7 +102,7 @@ func (au *authUsecase) Refresh(refreshToken string) (domain.RefreshResponse, err
 	err = au.authRepository.StoreRefreshToken(&domain.RefreshTokenRecord{
 		Token:       newRefreshToken,
 		UserID:      user.ID,
-		IgnoreAfter: time.Now().Add(time.Duration(au.cfg.JWT.RefreshTokenTTL) * time.Second),
+		IgnoreAfter: time.Now().Add(time.Duration(au.jwtCfg.RefreshTokenTTL) * time.Second),
 	})
 	if err != nil {
 		return domain.RefreshResponse{}, apperror.InternalServerError(err)

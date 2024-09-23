@@ -5,20 +5,20 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
+	"github.com/prajnasatryass/tic-be/config"
+	authV1 "github.com/prajnasatryass/tic-be/internal/auth/delivery/http/v1"
+	authRepository "github.com/prajnasatryass/tic-be/internal/auth/repository"
+	authUsecase "github.com/prajnasatryass/tic-be/internal/auth/usecase"
+	"github.com/prajnasatryass/tic-be/internal/database"
+	"github.com/prajnasatryass/tic-be/internal/middleware"
+	userV1 "github.com/prajnasatryass/tic-be/internal/user/delivery/http/v1"
+	userRepository "github.com/prajnasatryass/tic-be/internal/user/repository"
+	userUsecase "github.com/prajnasatryass/tic-be/internal/user/usecase"
 	"github.com/samber/lo"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"tic-be/config"
-	authV1 "tic-be/internal/auth/delivery/http/v1"
-	authRepository "tic-be/internal/auth/repository"
-	authUsecase "tic-be/internal/auth/usecase"
-	"tic-be/internal/database"
-	"tic-be/internal/middleware"
-	userV1 "tic-be/internal/user/delivery/http/v1"
-	userRepository "tic-be/internal/user/repository"
-	userUsecase "tic-be/internal/user/usecase"
 	"time"
 )
 
@@ -53,7 +53,7 @@ func (app *App) init() {
 	authRepo := authRepository.NewAuthRepository(app.db)
 	userRepo := userRepository.NewUserRepository(app.db)
 
-	authUC := authUsecase.NewAuthUsecase(authRepo, userRepo, app.cfg)
+	authUC := authUsecase.NewAuthUsecase(authRepo, userRepo, app.cfg.JWT)
 	authV1.NewAuthController(egAPIV1, authUC)
 
 	userUC := userUsecase.NewUserUsecase(userRepo)

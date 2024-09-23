@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"tic-be/internal/user/domain"
+	"github.com/prajnasatryass/tic-be/internal/user/domain"
 )
 
 type userRepository struct {

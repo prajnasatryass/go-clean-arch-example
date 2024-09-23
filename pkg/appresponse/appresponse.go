@@ -3,12 +3,12 @@ package appresponse
 import (
 	"errors"
 	"github.com/labstack/echo/v4"
+	"github.com/prajnasatryass/tic-be/pkg/apperror"
 	"net/http"
 	"slices"
-	"tic-be/pkg/apperror"
 )
 
-var allowedHTTPSuccessfulStatuses = []int{
+var httpSuccessStatusWhitelist = []int{
 	http.StatusOK,
 	http.StatusCreated,
 	http.StatusAccepted,
@@ -55,7 +55,7 @@ func SuccessResponseBuilder(data interface{}) SuccessResponse {
 }
 
 func (resp SuccessResponse) Return(c echo.Context, httpStatus ...int) error {
-	if len(httpStatus) > 0 && slices.Contains(allowedHTTPSuccessfulStatuses, httpStatus[0]) {
+	if len(httpStatus) > 0 && slices.Contains(httpSuccessStatusWhitelist, httpStatus[0]) {
 		return c.JSON(httpStatus[0], resp)
 	}
 	return c.JSON(http.StatusOK, resp)

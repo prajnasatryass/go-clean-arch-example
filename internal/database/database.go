@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"tic-be/config"
+	"github.com/prajnasatryass/tic-be/config"
 )
 
 const (

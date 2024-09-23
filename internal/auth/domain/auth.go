@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/google/uuid"
+	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
 	"time"
 )
 
@@ -39,6 +40,8 @@ type AuthUsecase interface {
 }
 
 type AuthRepository interface {
+	CreateAccessToken(user *userDomain.User, secret string, ttl int) (string, error)
+	CreateRefreshToken(user *userDomain.User, secret string, ttl int) (string, error)
 	StoreRefreshToken(record *RefreshTokenRecord) error
 	RetrieveRefreshToken(refreshToken string) (RefreshTokenRecord, error)
 	DeleteRefreshToken(refreshToken string) error

@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"tic-be/internal/user/domain"
+	"github.com/prajnasatryass/tic-be/internal/user/domain"
 )
 
 type userUsecase struct {

@@ -2,9 +2,9 @@ package tokenutil
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"tic-be/internal/middleware"
-	userDomain "tic-be/internal/user/domain"
-	"tic-be/pkg/appconstants"
+	"github.com/prajnasatryass/tic-be/internal/middleware"
+	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
+	"github.com/prajnasatryass/tic-be/pkg/appconstants"
 	"time"
 )
 

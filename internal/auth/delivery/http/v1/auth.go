@@ -2,10 +2,10 @@ package v1
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/prajnasatryass/tic-be/internal/auth/domain"
+	"github.com/prajnasatryass/tic-be/pkg/apperror"
+	"github.com/prajnasatryass/tic-be/pkg/appresponse"
 	"net/http"
-	"tic-be/internal/auth/domain"
-	"tic-be/pkg/apperror"
-	"tic-be/pkg/appresponse"
 )
 
 type authController struct {

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/prajnasatryass/tic-be/config"
+	"github.com/prajnasatryass/tic-be/internal/app"
 	"github.com/samber/lo"
-	"tic-be/config"
-	"tic-be/internal/app"
 	"time"
 )
 

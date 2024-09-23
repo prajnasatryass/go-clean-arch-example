@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"tic-be/internal/auth/domain"
+	"github.com/prajnasatryass/tic-be/internal/auth/domain"
+	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
+	"github.com/prajnasatryass/tic-be/pkg/tokenutil"
 )
 
 type authRepository struct {
@@ -15,6 +17,14 @@ func NewAuthRepository(db *sqlx.DB) domain.AuthRepository {
 	return &authRepository{
 		db: db,
 	}
+}
+
+func (ar *authRepository) CreateAccessToken(user *userDomain.User, secret string, ttl int) (string, error) {
+	return tokenutil.CreateAccessToken(user, secret, ttl)
+}
+
+func (ar *authRepository) CreateRefreshToken(user *userDomain.User, secret string, ttl int) (string, error) {
+	return tokenutil.CreateRefreshToken(user, secret, ttl)
 }
 
 func (ar *authRepository) StoreRefreshToken(record *domain.RefreshTokenRecord) error {
