@@ -17,12 +17,12 @@ func NewAuthController(eg *echo.Group, authUsecase domain.AuthUsecase) {
 		authUsecase: authUsecase,
 	}
 
-	eg.POST("/auth", c.Login)
-	eg.PUT("/auth", c.Refresh)
-	eg.DELETE("/auth", c.Logout)
+	eg.POST("", c.Login)
+	eg.PUT("/:refreshToken", c.Refresh)
+	eg.DELETE("/:refreshToken", c.Logout)
 }
 
-func (uc *authController) Login(c echo.Context) error {
+func (ac *authController) Login(c echo.Context) error {
 	var req domain.LoginRequest
 	if err := c.Bind(&req); err != nil {
 		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
@@ -31,7 +31,7 @@ func (uc *authController) Login(c echo.Context) error {
 		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
 	}
 
-	resp, err := uc.authUsecase.Login(req.Email, req.Password)
+	resp, err := ac.authUsecase.Login(req.Email, req.Password)
 	if err != nil {
 		return appresponse.ErrorResponseBuilder(err).Return(c)
 	}
@@ -39,7 +39,7 @@ func (uc *authController) Login(c echo.Context) error {
 	return appresponse.SuccessResponseBuilder(resp).Return(c, http.StatusCreated)
 }
 
-func (uc *authController) Refresh(c echo.Context) error {
+func (ac *authController) Refresh(c echo.Context) error {
 	var req domain.RefreshRequest
 	if err := c.Bind(&req); err != nil {
 		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
@@ -48,7 +48,7 @@ func (uc *authController) Refresh(c echo.Context) error {
 		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
 	}
 
-	resp, err := uc.authUsecase.Refresh(req.RefreshToken)
+	resp, err := ac.authUsecase.Refresh(req.RefreshToken)
 	if err != nil {
 		return appresponse.ErrorResponseBuilder(err).Return(c)
 	}
@@ -56,7 +56,7 @@ func (uc *authController) Refresh(c echo.Context) error {
 	return appresponse.SuccessResponseBuilder(resp).Return(c)
 }
 
-func (uc *authController) Logout(c echo.Context) error {
+func (ac *authController) Logout(c echo.Context) error {
 	var req domain.LogoutRequest
 	if err := c.Bind(&req); err != nil {
 		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
@@ -65,7 +65,7 @@ func (uc *authController) Logout(c echo.Context) error {
 		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
 	}
 
-	err := uc.authUsecase.Logout(req.RefreshToken)
+	err := ac.authUsecase.Logout(req.RefreshToken)
 	if err != nil {
 		return appresponse.ErrorResponseBuilder(err).Return(c)
 	}

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/prajnasatryass/tic-be/config"
 	"github.com/prajnasatryass/tic-be/pkg/apperror"
@@ -22,9 +21,8 @@ type JWTClaims struct {
 	Data      JWTClaimsData `json:"data"`
 }
 type JWTClaimsData struct {
-	ID     uuid.UUID `json:"id"`
-	Email  string    `json:"email"`
-	RoleID int       `json:"roleID"`
+	Email  string `json:"email"`
+	RoleID int    `json:"roleID"`
 }
 
 func (j *JWTClaims) GetExpirationTime() (*jwt.NumericDate, error) {

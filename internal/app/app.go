@@ -54,10 +54,12 @@ func (app *App) init() {
 	userRepo := userRepository.NewUserRepository(app.db)
 
 	authUC := authUsecase.NewAuthUsecase(authRepo, userRepo, app.cfg.JWT)
-	authV1.NewAuthController(egAPIV1, authUC)
+	egAPIV1Auth := egAPIV1.Group("/auth")
+	authV1.NewAuthController(egAPIV1Auth, authUC)
 
 	userUC := userUsecase.NewUserUsecase(userRepo)
-	userV1.NewUserController(egAPIV1, userUC)
+	egAPIV1User := egAPIV1.Group("/user")
+	userV1.NewUserController(egAPIV1User, userUC)
 }
 
 func (app *App) Run() error {

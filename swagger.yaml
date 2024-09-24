@@ -1,0 +1,192 @@
+openapi: 3.0.3
+info:
+  title: TIC Inventory Management API
+  description: |-
+    Created 24 September 2024.\
+    Project owner: [TIC Indonesia](https://ticindo.com)\
+    Author: [Prajnasatrya Sukur Suryanto](mailto:prajnasss@ymail.com)
+  contact:
+    email: prajnasss@ymail.com
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io
+servers:
+  - url: http://localhost:8080/api/v1
+tags:
+  - name: auth
+  - name: user
+paths:
+  /auth:
+    post:
+      tags:
+        - auth
+      summary: Login
+      description: ''
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '201':
+          description: Access and refresh token generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /auth/{refreshToken}:
+    put:
+      tags:
+        - auth
+      summary: Refresh
+      description: ''
+      operationId: authRefresh
+      parameters:
+        - name: refreshToken
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: New access and refresh token generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+    delete:
+      tags:
+        - auth
+      summary: Logout
+      description: ''
+      operationId: authLogout
+      parameters:
+        - name: refreshToken
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Refresh token deleted.
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create new user
+      description: ''
+      operationId: userCreate
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: New user created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+      security:
+        - bearerAuth: []
+  /user/{id}:
+    get:
+      tags:
+        - user
+      summary: Get user by user ID
+      description: ''
+      operationId: userGetByID
+      parameters:
+        - name: id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserResponse'
+        '404':
+          description: User not found
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - user
+      summary: Soft delete user
+      description: ''
+      operationId: userDelete
+      parameters:
+        - name: id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User set as inactive and marked as deleted
+        '404':
+          description: User not found
+      security:
+        - bearerAuth: []
+components:
+  schemas:
+    AuthRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: user@ticindo.com
+        password:
+          type: string
+          example: abc123
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: jwt_access_token
+        refreshToken:
+          type: string
+          example: jwt_refresh_token
+    CreateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: user@ticindo.com
+        password:
+          type: string
+          example: abc123
+    CreateUserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 4397a970-ebc6-4e95-a86c-4df76eaa05bb
+    GetUserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 4397a970-ebc6-4e95-a86c-4df76eaa05bb
+        email:
+          type: string
+          example: user@ticindo.com
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

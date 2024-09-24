@@ -16,7 +16,7 @@ func CreateAccessToken(user *userDomain.User, secret string, ttl int) (string, e
 		Expiry:   now.Add(time.Duration(ttl) * time.Second),
 		IssuedAt: now,
 		Data: middleware.JWTClaimsData{
-			ID:     user.ID,
+			Email:  user.Email,
 			RoleID: user.RoleID,
 		},
 	})

@@ -35,7 +35,7 @@ func (ur *userRepository) GetByID(id uuid.UUID) (domain.User, error) {
 }
 
 func (ur *userRepository) DeleteByID(id uuid.UUID) error {
-	_, err := ur.db.ExecContext(context.Background(), "UPDATE users SET deleted_at = NOW() WHERE id = $1", id)
+	_, err := ur.db.ExecContext(context.Background(), "UPDATE users SET is_active = FALSE, deleted_at = NOW() WHERE id = $1", id)
 	return err
 }
 

@@ -38,7 +38,7 @@ func (au *authUsecase) Login(email, password string) (domain.LoginResponse, erro
 	user, err := au.userRepository.GetByEmail(email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return domain.LoginResponse{}, apperror.Unauthorized(errEmailNotLinked(email))
+			return domain.LoginResponse{}, apperror.NotFound(errEmailNotLinked(email))
 		}
 		return domain.LoginResponse{}, apperror.InternalServerError(err)
 	}
