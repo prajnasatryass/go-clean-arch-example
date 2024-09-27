@@ -8,6 +8,7 @@ import (
 	"github.com/prajnasatryass/tic-be/config"
 	"github.com/prajnasatryass/tic-be/pkg/apperror"
 	"github.com/prajnasatryass/tic-be/pkg/appresponse"
+	"github.com/prajnasatryass/tic-be/pkg/constants"
 	"time"
 )
 
@@ -21,8 +22,8 @@ type JWTClaims struct {
 	Data      JWTClaimsData `json:"data"`
 }
 type JWTClaimsData struct {
-	Email  string `json:"email"`
-	RoleID int    `json:"roleID"`
+	Email  string             `json:"email"`
+	RoleID constants.UserRole `json:"roleID"`
 }
 
 func (j *JWTClaims) GetExpirationTime() (*jwt.NumericDate, error) {
@@ -58,7 +59,8 @@ var (
 	errJWTTokenInvalid = func(errStr string) error {
 		return errors.New("JWT token invalid: " + errStr)
 	}
-	errJWTClaimsDataNotFound = errors.New("JWT claims data not found")
+	errRoleUnassigned        = errors.New("user role unassigned. Access rejected")
+	errJWTClaimsDataNotFound = errors.New("JWT claims data not found. Please login again")
 )
 
 func JWTAuth(cfg config.Config) echo.MiddlewareFunc {
@@ -66,7 +68,7 @@ func JWTAuth(cfg config.Config) echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			authHeader := c.Request().Header.Get(authorizationHeaderKey)
 			if authHeader == "" {
-				return appresponse.ErrorResponseBuilder(apperror.Unauthorized(errAuthorizationHeaderMissingOrEmpty)).Return(c)
+				return appresponse.ErrorResponseBuilder(apperror.Forbidden(errAuthorizationHeaderMissingOrEmpty)).Return(c)
 			}
 			tokenStr := authHeader[len(authorizationHeaderPrefix):]
 
@@ -77,10 +79,13 @@ func JWTAuth(cfg config.Config) echo.MiddlewareFunc {
 				return []byte(cfg.JWT.AccessTokenSecret), nil
 			})
 			if err != nil {
-				return appresponse.ErrorResponseBuilder(apperror.Unauthorized(errJWTTokenInvalid(err.Error()))).Return(c)
+				return appresponse.ErrorResponseBuilder(apperror.Forbidden(errJWTTokenInvalid(err.Error()))).Return(c)
 			}
 
 			claims := token.Claims.(*JWTClaims)
+			if claims.Data.RoleID == constants.UserRoleUnassigned {
+				return appresponse.ErrorResponseBuilder(apperror.Forbidden(errRoleUnassigned)).Return(c)
+			}
 			c.Set(jwtClaimsKey, claims)
 
 			return next(c)

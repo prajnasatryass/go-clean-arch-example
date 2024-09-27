@@ -3,6 +3,7 @@ package usecase
 import (
 	"database/sql"
 	"errors"
+	"github.com/labstack/gommon/log"
 	"github.com/prajnasatryass/tic-be/config"
 	"github.com/prajnasatryass/tic-be/internal/auth/domain"
 	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
@@ -15,15 +16,21 @@ var (
 	errEmailNotLinked = func(email string) error {
 		return errors.New(email + " is not linked to any user")
 	}
+	errGetUser                      = func(err error) error { return errors.New("get user error: " + err.Error()) }
 	errPasswordIncorrect            = errors.New("password incorrect")
+	errCreateAccessToken            = func(err error) error { return errors.New("create access token error: " + err.Error()) }
+	errCreateRefreshToken           = func(err error) error { return errors.New("create refresh token error: " + err.Error()) }
+	errStoreRefreshToken            = func(err error) error { return errors.New("store refresh token error: " + err.Error()) }
 	errRefreshTokenInvalidOrExpired = errors.New("refresh token invalid or expired")
 	errRefreshTokenNotLinked        = errors.New("refresh token not linked to any user")
+	errDeleteRefreshToken           = func(err error) error { return errors.New("delete refresh token error: " + err.Error()) }
 )
 
 type authUsecase struct {
 	authRepository domain.AuthRepository
 	userRepository userDomain.UserRepository
 	jwtCfg         config.JWTConfig
+	hasher         hasher.Hasher
 }
 
 func NewAuthUsecase(authRepository domain.AuthRepository, userRepository userDomain.UserRepository, jwtCfg config.JWTConfig) domain.AuthUsecase {
@@ -31,6 +38,7 @@ func NewAuthUsecase(authRepository domain.AuthRepository, userRepository userDom
 		authRepository: authRepository,
 		userRepository: userRepository,
 		jwtCfg:         jwtCfg,
+		hasher:         hasher.NewHasher(),
 	}
 }
 
@@ -40,21 +48,21 @@ func (au *authUsecase) Login(email, password string) (domain.LoginResponse, erro
 		if errors.Is(err, sql.ErrNoRows) {
 			return domain.LoginResponse{}, apperror.NotFound(errEmailNotLinked(email))
 		}
-		return domain.LoginResponse{}, apperror.InternalServerError(err)
+		return domain.LoginResponse{}, apperror.InternalServerError(errGetUser(err))
 	}
 
-	if !hasher.MatchPassword(password, user.Password) {
+	if !au.hasher.MatchPassword(password, user.Password) {
 		return domain.LoginResponse{}, apperror.Unauthorized(errPasswordIncorrect)
 	}
 
 	accessToken, err := au.authRepository.CreateAccessToken(&user, au.jwtCfg.AccessTokenSecret, au.jwtCfg.AccessTokenTTL)
 	if err != nil {
-		return domain.LoginResponse{}, apperror.InternalServerError(err)
+		return domain.LoginResponse{}, apperror.InternalServerError(errCreateAccessToken(err))
 	}
 
 	refreshToken, err := au.authRepository.CreateRefreshToken(&user, au.jwtCfg.RefreshTokenSecret, au.jwtCfg.RefreshTokenTTL)
 	if err != nil {
-		return domain.LoginResponse{}, apperror.InternalServerError(err)
+		return domain.LoginResponse{}, apperror.InternalServerError(errCreateRefreshToken(err))
 	}
 
 	err = au.authRepository.StoreRefreshToken(&domain.RefreshTokenRecord{
@@ -63,7 +71,7 @@ func (au *authUsecase) Login(email, password string) (domain.LoginResponse, erro
 		IgnoreAfter: time.Now().Add(time.Duration(au.jwtCfg.RefreshTokenTTL) * time.Second),
 	})
 	if err != nil {
-		return domain.LoginResponse{}, apperror.InternalServerError(err)
+		return domain.LoginResponse{}, apperror.InternalServerError(errStoreRefreshToken(err))
 	}
 
 	return domain.LoginResponse{
@@ -91,12 +99,12 @@ func (au *authUsecase) Refresh(refreshToken string) (domain.RefreshResponse, err
 
 	newAccessToken, err := au.authRepository.CreateAccessToken(&user, au.jwtCfg.AccessTokenSecret, au.jwtCfg.AccessTokenTTL)
 	if err != nil {
-		return domain.RefreshResponse{}, apperror.InternalServerError(err)
+		return domain.RefreshResponse{}, apperror.InternalServerError(errCreateAccessToken(err))
 	}
 
 	newRefreshToken, err := au.authRepository.CreateRefreshToken(&user, au.jwtCfg.RefreshTokenSecret, au.jwtCfg.RefreshTokenTTL)
 	if err != nil {
-		return domain.RefreshResponse{}, apperror.InternalServerError(err)
+		return domain.RefreshResponse{}, apperror.InternalServerError(errCreateRefreshToken(err))
 	}
 
 	err = au.authRepository.StoreRefreshToken(&domain.RefreshTokenRecord{
@@ -105,8 +113,15 @@ func (au *authUsecase) Refresh(refreshToken string) (domain.RefreshResponse, err
 		IgnoreAfter: time.Now().Add(time.Duration(au.jwtCfg.RefreshTokenTTL) * time.Second),
 	})
 	if err != nil {
-		return domain.RefreshResponse{}, apperror.InternalServerError(err)
+		return domain.RefreshResponse{}, apperror.InternalServerError(errStoreRefreshToken(err))
 	}
+
+	go func() {
+		err = au.authRepository.DeleteRefreshToken(refreshToken)
+		if err != nil {
+			log.Error(errDeleteRefreshToken(err))
+		}
+	}()
 
 	return domain.RefreshResponse{
 		AccessToken:  newAccessToken,

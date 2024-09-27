@@ -37,6 +37,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Provided password is incorrect
+        '404':
+          description: Provided email is not linked to any user
+        '500':
+          description: Internal server error
   /auth/{refreshToken}:
     put:
       tags:
@@ -58,6 +64,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
+        '404':
+          description: |
+            Provided refresh token is invalid/expired OR
+            provided refresh token is not linked to any user
+        '500':
+          description: Internal server error
     delete:
       tags:
         - auth
@@ -73,7 +85,9 @@ paths:
             type: string
       responses:
         '200':
-          description: Refresh token deleted.
+          description: Refresh token deleted
+        '500':
+          description: Internal server error
   /user:
     post:
       tags:
@@ -94,8 +108,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateUserResponse'
+        '409':
+          description: Provided email address is already used
+        '500':
+          description: Internal server error
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
   /user/{id}:
     get:
       tags:
@@ -119,12 +137,14 @@ paths:
                 $ref: '#/components/schemas/GetUserResponse'
         '404':
           description: User not found
+        '500':
+          description: Internal server error
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
     delete:
       tags:
         - user
-      summary: Soft delete user
+      summary: Delete user
       description: ''
       operationId: userDelete
       parameters:
@@ -136,11 +156,40 @@ paths:
             type: string
       responses:
         '200':
-          description: User set as inactive and marked as deleted
-        '404':
-          description: User not found
+          description: User marked as deleted
+        '500':
+          description: Internal server error
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
+  /user/{id}/role:
+    patch:
+      tags:
+        - user
+      summary: Update user role
+      description: ''
+      operationId: userUpdateRole
+      parameters:
+        - name: id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRoleRequest'
+      responses:
+        '200':
+          description: User role updated
+        '404':
+          description: Provided user role ID not found
+        '500':
+          description: Internal server error
+      security:
+        - bearerAuth: [ ]
 components:
   schemas:
     AuthRequest:
@@ -185,6 +234,13 @@ components:
         email:
           type: string
           example: user@ticindo.com
+    UpdateUserRoleRequest:
+      type: object
+      properties:
+        roleID:
+          type: integer
+          format: int32
+          example: 1
   securitySchemes:
     bearerAuth:
       type: http

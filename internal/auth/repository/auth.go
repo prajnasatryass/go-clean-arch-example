@@ -10,21 +10,23 @@ import (
 )
 
 type authRepository struct {
-	db *sqlx.DB
+	db        *sqlx.DB
+	tokenUtil tokenutil.TokenUtil
 }
 
 func NewAuthRepository(db *sqlx.DB) domain.AuthRepository {
 	return &authRepository{
-		db: db,
+		db:        db,
+		tokenUtil: tokenutil.NewTokenUtil(),
 	}
 }
 
 func (ar *authRepository) CreateAccessToken(user *userDomain.User, secret string, ttl int) (string, error) {
-	return tokenutil.CreateAccessToken(user, secret, ttl)
+	return ar.tokenUtil.CreateAccessToken(user, secret, ttl)
 }
 
 func (ar *authRepository) CreateRefreshToken(user *userDomain.User, secret string, ttl int) (string, error) {
-	return tokenutil.CreateRefreshToken(user, secret, ttl)
+	return ar.tokenUtil.CreateRefreshToken(user, secret, ttl)
 }
 
 func (ar *authRepository) StoreRefreshToken(record *domain.RefreshTokenRecord) error {

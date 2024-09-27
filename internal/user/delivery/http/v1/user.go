@@ -19,6 +19,7 @@ func NewUserController(eg *echo.Group, userUsecase domain.UserUsecase) {
 
 	eg.POST("", uc.Create)
 	eg.GET("/:id", uc.GetByID)
+	eg.PATCH("/:id/role", uc.UpdateRoleByID)
 	eg.DELETE("/:id", uc.DeleteByID)
 	return
 }
@@ -41,7 +42,7 @@ func (uc *userController) Create(c echo.Context) error {
 }
 
 func (uc *userController) GetByID(c echo.Context) error {
-	var req domain.GetByIDRequest
+	var req domain.ByIDRequest
 	if err := c.Bind(&req); err != nil {
 		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
 	}
@@ -57,8 +58,25 @@ func (uc *userController) GetByID(c echo.Context) error {
 	return appresponse.SuccessResponseBuilder(resp).Return(c)
 }
 
+func (uc *userController) UpdateRoleByID(c echo.Context) error {
+	var req domain.UpdateRoleByIDRequest
+	if err := c.Bind(&req); err != nil {
+		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
+	}
+	if err := c.Validate(req); err != nil {
+		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
+	}
+
+	err := uc.userUsecase.UpdateRoleByID(req.ID, req.RoleID)
+	if err != nil {
+		return appresponse.ErrorResponseBuilder(err).Return(c)
+	}
+
+	return appresponse.NoContent(c)
+}
+
 func (uc *userController) DeleteByID(c echo.Context) error {
-	var req domain.DeleteByIDRequest
+	var req domain.ByIDRequest
 	if err := c.Bind(&req); err != nil {
 		return appresponse.ErrorResponseBuilder(apperror.BadRequest(err)).Return(c)
 	}

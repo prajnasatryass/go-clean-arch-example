@@ -5,8 +5,19 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/prajnasatryass/tic-be/internal/user/domain"
+	"github.com/prajnasatryass/tic-be/pkg/constants"
 	"reflect"
 	"testing"
+)
+
+var (
+	inputUser = domain.User{
+		Email:    "user@ticindo.com",
+		Password: "123",
+	}
+	newUserID   = uuid.New()
+	queryUserID = uuid.New()
+	newRoleID   = constants.UserRoleRoot
 )
 
 func TestNewUserRepository(t *testing.T) {
@@ -49,13 +60,15 @@ func Test_userRepository_Create(t *testing.T) {
 		db *sqlx.DB
 	}
 	type args struct {
-		user *domain.User
+		email    string
+		password string
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
 		pre     func()
+		want    uuid.UUID
 		wantErr bool
 	}{
 		{
@@ -64,11 +77,14 @@ func Test_userRepository_Create(t *testing.T) {
 				db: sqlxDB,
 			},
 			args: args{
-				user: &domain.User{},
+				email:    inputUser.Email,
+				password: inputUser.Password,
 			},
 			pre: func() {
-				dbMock.ExpectExec("INSERT INTO users").WillReturnResult(sqlmock.NewResult(1, 1))
+				rows := sqlmock.NewRows([]string{"id"}).AddRow(newUserID)
+				dbMock.ExpectQuery("INSERT INTO users").WillReturnRows(rows)
 			},
+			want:    newUserID,
 			wantErr: false,
 		},
 	}
@@ -78,8 +94,13 @@ func Test_userRepository_Create(t *testing.T) {
 				db: tt.fields.db,
 			}
 			tt.pre()
-			if err := ur.Create(tt.args.user); (err != nil) != tt.wantErr {
+			got, err := ur.Create(tt.args.email, tt.args.password)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Create() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -92,8 +113,6 @@ func Test_userRepository_DeleteByID(t *testing.T) {
 	}
 	defer db.Close()
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
-
-	queryUserID := uuid.New()
 
 	type fields struct {
 		db *sqlx.DB
@@ -201,8 +220,6 @@ func Test_userRepository_GetByID(t *testing.T) {
 	defer db.Close()
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
-	queryUserID := uuid.New()
-
 	type fields struct {
 		db *sqlx.DB
 	}
@@ -261,8 +278,6 @@ func Test_userRepository_PermaDeleteByID(t *testing.T) {
 	defer db.Close()
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
-	queryUserID := uuid.New()
-
 	type fields struct {
 		db *sqlx.DB
 	}
@@ -298,6 +313,56 @@ func Test_userRepository_PermaDeleteByID(t *testing.T) {
 			tt.pre()
 			if err := ur.PermaDeleteByID(tt.args.id); (err != nil) != tt.wantErr {
 				t.Errorf("PermaDeleteByID() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_userRepository_UpdateRoleByID(t *testing.T) {
+	db, dbMock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal("db mock error: " + err.Error())
+	}
+	defer db.Close()
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+
+	type fields struct {
+		db *sqlx.DB
+	}
+	type args struct {
+		id     uuid.UUID
+		roleID constants.UserRole
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		pre     func()
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				db: sqlxDB,
+			},
+			args: args{
+				id:     queryUserID,
+				roleID: newRoleID,
+			},
+			pre: func() {
+				dbMock.ExpectExec("UPDATE users").WithArgs(newRoleID, queryUserID).WillReturnResult(sqlmock.NewResult(1, 1))
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ur := &userRepository{
+				db: tt.fields.db,
+			}
+			tt.pre()
+			if err := ur.UpdateRoleByID(tt.args.id, tt.args.roleID); (err != nil) != tt.wantErr {
+				t.Errorf("UpdateRoleByID() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

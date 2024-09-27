@@ -8,7 +8,18 @@ import (
 	"time"
 )
 
-func CreateAccessToken(user *userDomain.User, secret string, ttl int) (string, error) {
+type TokenUtil interface {
+	CreateAccessToken(user *userDomain.User, secret string, ttl int) (string, error)
+	CreateRefreshToken(user *userDomain.User, secret string, ttl int) (string, error)
+}
+
+type tokenUtil struct{}
+
+func NewTokenUtil() TokenUtil {
+	return &tokenUtil{}
+}
+
+func (tu *tokenUtil) CreateAccessToken(user *userDomain.User, secret string, ttl int) (string, error) {
 	now := time.Now()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &middleware.JWTClaims{
 		Issuer:   appconstants.CompanySiteAddress,
@@ -24,7 +35,7 @@ func CreateAccessToken(user *userDomain.User, secret string, ttl int) (string, e
 	return token.SignedString([]byte(secret))
 }
 
-func CreateRefreshToken(user *userDomain.User, secret string, ttl int) (string, error) {
+func (tu *tokenUtil) CreateRefreshToken(user *userDomain.User, secret string, ttl int) (string, error) {
 	now := time.Now()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &middleware.JWTClaims{
 		Issuer:   appconstants.CompanySiteAddress,

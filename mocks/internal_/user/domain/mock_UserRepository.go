@@ -4,6 +4,8 @@ package domain
 
 import (
 	domain "github.com/prajnasatryass/tic-be/internal/user/domain"
+	constants "github.com/prajnasatryass/tic-be/pkg/constants"
+
 	mock "github.com/stretchr/testify/mock"
 
 	uuid "github.com/google/uuid"
@@ -22,22 +24,34 @@ func (_m *MockUserRepository) EXPECT() *MockUserRepository_Expecter {
 	return &MockUserRepository_Expecter{mock: &_m.Mock}
 }
 
-// Create provides a mock function with given fields: user
-func (_m *MockUserRepository) Create(user *domain.User) error {
-	ret := _m.Called(user)
+// Create provides a mock function with given fields: email, password
+func (_m *MockUserRepository) Create(email string, password string) (uuid.UUID, error) {
+	ret := _m.Called(email, password)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*domain.User) error); ok {
-		r0 = rf(user)
+	var r0 uuid.UUID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (uuid.UUID, error)); ok {
+		return rf(email, password)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) uuid.UUID); ok {
+		r0 = rf(email, password)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(uuid.UUID)
+		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(email, password)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // MockUserRepository_Create_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Create'
@@ -46,24 +60,25 @@ type MockUserRepository_Create_Call struct {
 }
 
 // Create is a helper method to define mock.On call
-//   - user *domain.User
-func (_e *MockUserRepository_Expecter) Create(user interface{}) *MockUserRepository_Create_Call {
-	return &MockUserRepository_Create_Call{Call: _e.mock.On("Create", user)}
+//   - email string
+//   - password string
+func (_e *MockUserRepository_Expecter) Create(email interface{}, password interface{}) *MockUserRepository_Create_Call {
+	return &MockUserRepository_Create_Call{Call: _e.mock.On("Create", email, password)}
 }
 
-func (_c *MockUserRepository_Create_Call) Run(run func(user *domain.User)) *MockUserRepository_Create_Call {
+func (_c *MockUserRepository_Create_Call) Run(run func(email string, password string)) *MockUserRepository_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(*domain.User))
+		run(args[0].(string), args[1].(string))
 	})
 	return _c
 }
 
-func (_c *MockUserRepository_Create_Call) Return(_a0 error) *MockUserRepository_Create_Call {
-	_c.Call.Return(_a0)
+func (_c *MockUserRepository_Create_Call) Return(_a0 uuid.UUID, _a1 error) *MockUserRepository_Create_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockUserRepository_Create_Call) RunAndReturn(run func(*domain.User) error) *MockUserRepository_Create_Call {
+func (_c *MockUserRepository_Create_Call) RunAndReturn(run func(string, string) (uuid.UUID, error)) *MockUserRepository_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -268,6 +283,53 @@ func (_c *MockUserRepository_PermaDeleteByID_Call) Return(_a0 error) *MockUserRe
 }
 
 func (_c *MockUserRepository_PermaDeleteByID_Call) RunAndReturn(run func(uuid.UUID) error) *MockUserRepository_PermaDeleteByID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateRoleByID provides a mock function with given fields: id, roleID
+func (_m *MockUserRepository) UpdateRoleByID(id uuid.UUID, roleID constants.UserRole) error {
+	ret := _m.Called(id, roleID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateRoleByID")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uuid.UUID, constants.UserRole) error); ok {
+		r0 = rf(id, roleID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockUserRepository_UpdateRoleByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateRoleByID'
+type MockUserRepository_UpdateRoleByID_Call struct {
+	*mock.Call
+}
+
+// UpdateRoleByID is a helper method to define mock.On call
+//   - id uuid.UUID
+//   - roleID constants.UserRole
+func (_e *MockUserRepository_Expecter) UpdateRoleByID(id interface{}, roleID interface{}) *MockUserRepository_UpdateRoleByID_Call {
+	return &MockUserRepository_UpdateRoleByID_Call{Call: _e.mock.On("UpdateRoleByID", id, roleID)}
+}
+
+func (_c *MockUserRepository_UpdateRoleByID_Call) Run(run func(id uuid.UUID, roleID constants.UserRole)) *MockUserRepository_UpdateRoleByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(uuid.UUID), args[1].(constants.UserRole))
+	})
+	return _c
+}
+
+func (_c *MockUserRepository_UpdateRoleByID_Call) Return(_a0 error) *MockUserRepository_UpdateRoleByID_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockUserRepository_UpdateRoleByID_Call) RunAndReturn(run func(uuid.UUID, constants.UserRole) error) *MockUserRepository_UpdateRoleByID_Call {
 	_c.Call.Return(run)
 	return _c
 }

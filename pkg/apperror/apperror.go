@@ -42,6 +42,13 @@ func NotFound(err error) error {
 	}
 }
 
+func Conflict(err error) error {
+	return &AppError{
+		Status: http.StatusConflict,
+		Err:    err,
+	}
+}
+
 func InternalServerError(err error) error {
 	return &AppError{
 		Status: http.StatusInternalServerError,

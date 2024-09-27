@@ -9,6 +9,8 @@ import (
 	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
 	mockDomain "github.com/prajnasatryass/tic-be/mocks/internal_/auth/domain"
 	mockUserDomain "github.com/prajnasatryass/tic-be/mocks/internal_/user/domain"
+	mockHasher "github.com/prajnasatryass/tic-be/mocks/pkg/hasher"
+	"github.com/prajnasatryass/tic-be/pkg/hasher"
 	"github.com/stretchr/testify/mock"
 	"reflect"
 	"testing"
@@ -43,13 +45,11 @@ var (
 )
 
 func TestNewAuthUsecase(t *testing.T) {
-	mockAuthRepository := mockDomain.NewMockAuthRepository(t)
-	mockUserRepository := mockUserDomain.NewMockUserRepository(t)
-
 	type args struct {
 		authRepository domain.AuthRepository
 		userRepository userDomain.UserRepository
 		jwtCfg         config.JWTConfig
+		hasher         hasher.Hasher
 	}
 	tests := []struct {
 		name string
@@ -59,14 +59,15 @@ func TestNewAuthUsecase(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				authRepository: mockAuthRepository,
-				userRepository: mockUserRepository,
+				authRepository: nil,
+				userRepository: nil,
 				jwtCfg:         config.JWTConfig{},
 			},
 			want: &authUsecase{
-				authRepository: mockAuthRepository,
-				userRepository: mockUserRepository,
+				authRepository: nil,
+				userRepository: nil,
 				jwtCfg:         config.JWTConfig{},
+				hasher:         hasher.NewHasher(),
 			},
 		},
 	}
@@ -82,11 +83,13 @@ func TestNewAuthUsecase(t *testing.T) {
 func Test_authUsecase_Login(t *testing.T) {
 	mockAuthRepository := mockDomain.NewMockAuthRepository(t)
 	mockUserRepository := mockUserDomain.NewMockUserRepository(t)
+	mockTestHasher := mockHasher.NewMockHasher(t)
 
 	type fields struct {
 		authRepository domain.AuthRepository
 		userRepository userDomain.UserRepository
 		jwtCfg         config.JWTConfig
+		hasher         hasher.Hasher
 	}
 	type args struct {
 		email    string
@@ -106,6 +109,7 @@ func Test_authUsecase_Login(t *testing.T) {
 				authRepository: mockAuthRepository,
 				userRepository: mockUserRepository,
 				jwtCfg:         jwtCfg,
+				hasher:         mockTestHasher,
 			},
 			args: args{
 				email:    inputUser.Email,
@@ -123,6 +127,7 @@ func Test_authUsecase_Login(t *testing.T) {
 				authRepository: mockAuthRepository,
 				userRepository: mockUserRepository,
 				jwtCfg:         jwtCfg,
+				hasher:         mockTestHasher,
 			},
 			args: args{
 				email:    inputUser.Email,
@@ -140,13 +145,15 @@ func Test_authUsecase_Login(t *testing.T) {
 				authRepository: mockAuthRepository,
 				userRepository: mockUserRepository,
 				jwtCfg:         jwtCfg,
+				hasher:         mockTestHasher,
 			},
 			args: args{
 				email:    inputUser.Email,
-				password: "*#(#*%(#%*@",
+				password: inputUser.Password,
 			},
 			pre: func() {
 				mockUserRepository.EXPECT().GetByEmail(inputUser.Email).Return(matchUser, nil).Once()
+				mockTestHasher.EXPECT().MatchPassword(inputUser.Password, matchUser.Password).Return(false).Once()
 			},
 			want:    domain.LoginResponse{},
 			wantErr: true,
@@ -157,6 +164,7 @@ func Test_authUsecase_Login(t *testing.T) {
 				authRepository: mockAuthRepository,
 				userRepository: mockUserRepository,
 				jwtCfg:         jwtCfg,
+				hasher:         mockTestHasher,
 			},
 			args: args{
 				email:    inputUser.Email,
@@ -164,6 +172,7 @@ func Test_authUsecase_Login(t *testing.T) {
 			},
 			pre: func() {
 				mockUserRepository.EXPECT().GetByEmail(inputUser.Email).Return(matchUser, nil).Once()
+				mockTestHasher.EXPECT().MatchPassword(inputUser.Password, matchUser.Password).Return(true).Once()
 				mockAuthRepository.EXPECT().CreateAccessToken(&matchUser, jwtCfg.AccessTokenSecret, jwtCfg.AccessTokenTTL).Return("", errors.New("")).Once()
 			},
 			want:    domain.LoginResponse{},
@@ -175,6 +184,7 @@ func Test_authUsecase_Login(t *testing.T) {
 				authRepository: mockAuthRepository,
 				userRepository: mockUserRepository,
 				jwtCfg:         jwtCfg,
+				hasher:         mockTestHasher,
 			},
 			args: args{
 				email:    inputUser.Email,
@@ -182,6 +192,7 @@ func Test_authUsecase_Login(t *testing.T) {
 			},
 			pre: func() {
 				mockUserRepository.EXPECT().GetByEmail(inputUser.Email).Return(matchUser, nil).Once()
+				mockTestHasher.EXPECT().MatchPassword(inputUser.Password, matchUser.Password).Return(true).Once()
 				mockAuthRepository.EXPECT().CreateAccessToken(&matchUser, jwtCfg.AccessTokenSecret, jwtCfg.AccessTokenTTL).Return(accessToken, nil).Once()
 				mockAuthRepository.EXPECT().CreateRefreshToken(&matchUser, jwtCfg.RefreshTokenSecret, jwtCfg.RefreshTokenTTL).Return("", errors.New("")).Once()
 			},
@@ -194,6 +205,7 @@ func Test_authUsecase_Login(t *testing.T) {
 				authRepository: mockAuthRepository,
 				userRepository: mockUserRepository,
 				jwtCfg:         jwtCfg,
+				hasher:         mockTestHasher,
 			},
 			args: args{
 				email:    inputUser.Email,
@@ -201,6 +213,7 @@ func Test_authUsecase_Login(t *testing.T) {
 			},
 			pre: func() {
 				mockUserRepository.EXPECT().GetByEmail(inputUser.Email).Return(matchUser, nil).Once()
+				mockTestHasher.EXPECT().MatchPassword(inputUser.Password, matchUser.Password).Return(true).Once()
 				mockAuthRepository.EXPECT().CreateAccessToken(&matchUser, jwtCfg.AccessTokenSecret, jwtCfg.AccessTokenTTL).Return(accessToken, nil).Once()
 				mockAuthRepository.EXPECT().CreateRefreshToken(&matchUser, jwtCfg.RefreshTokenSecret, jwtCfg.RefreshTokenTTL).Return(refreshToken, nil).Once()
 				mockAuthRepository.EXPECT().StoreRefreshToken(mock.Anything).Return(errors.New("")).Once()
@@ -214,6 +227,7 @@ func Test_authUsecase_Login(t *testing.T) {
 				authRepository: mockAuthRepository,
 				userRepository: mockUserRepository,
 				jwtCfg:         jwtCfg,
+				hasher:         mockTestHasher,
 			},
 			args: args{
 				email:    inputUser.Email,
@@ -221,6 +235,7 @@ func Test_authUsecase_Login(t *testing.T) {
 			},
 			pre: func() {
 				mockUserRepository.EXPECT().GetByEmail(inputUser.Email).Return(matchUser, nil).Once()
+				mockTestHasher.EXPECT().MatchPassword(inputUser.Password, matchUser.Password).Return(true).Once()
 				mockAuthRepository.EXPECT().CreateAccessToken(&matchUser, jwtCfg.AccessTokenSecret, jwtCfg.AccessTokenTTL).Return(accessToken, nil).Once()
 				mockAuthRepository.EXPECT().CreateRefreshToken(&matchUser, jwtCfg.RefreshTokenSecret, jwtCfg.RefreshTokenTTL).Return(refreshToken, nil).Once()
 				mockAuthRepository.EXPECT().StoreRefreshToken(mock.Anything).Return(nil).Once()
@@ -238,6 +253,7 @@ func Test_authUsecase_Login(t *testing.T) {
 				authRepository: tt.fields.authRepository,
 				userRepository: tt.fields.userRepository,
 				jwtCfg:         tt.fields.jwtCfg,
+				hasher:         tt.fields.hasher,
 			}
 			tt.pre()
 			got, err := au.Login(tt.args.email, tt.args.password)
@@ -260,6 +276,7 @@ func Test_authUsecase_Logout(t *testing.T) {
 		authRepository domain.AuthRepository
 		userRepository userDomain.UserRepository
 		jwtCfg         config.JWTConfig
+		hasher         hasher.Hasher
 	}
 	type args struct {
 		refreshToken string
@@ -310,6 +327,7 @@ func Test_authUsecase_Refresh(t *testing.T) {
 		authRepository domain.AuthRepository
 		userRepository userDomain.UserRepository
 		jwtCfg         config.JWTConfig
+		hasher         hasher.Hasher
 	}
 	type args struct {
 		refreshToken string
@@ -461,6 +479,7 @@ func Test_authUsecase_Refresh(t *testing.T) {
 				mockAuthRepository.EXPECT().CreateAccessToken(&matchUser, jwtCfg.AccessTokenSecret, jwtCfg.AccessTokenTTL).Return(accessToken, nil).Once()
 				mockAuthRepository.EXPECT().CreateRefreshToken(&matchUser, jwtCfg.RefreshTokenSecret, jwtCfg.RefreshTokenTTL).Return(refreshToken, nil).Once()
 				mockAuthRepository.EXPECT().StoreRefreshToken(mock.Anything).Return(nil).Once()
+				mockAuthRepository.EXPECT().DeleteRefreshToken(refreshToken).Return(nil).Once()
 			},
 			want: domain.RefreshResponse{
 				AccessToken:  accessToken,

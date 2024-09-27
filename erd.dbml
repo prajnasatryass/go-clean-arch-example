@@ -1,0 +1,26 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+// View ERD from: https://dbdiagram.io/d
+
+Project tic_db {
+  database_type: 'PostgreSQL'
+}
+
+Table users {
+  id         uuid [PK, DEFAULT: `gen_random_uuid()`]
+  email      VARCHAR [UNIQUE, NOT NULL]
+  password   TEXT [NOT NULL]
+  role_id    INT [NOT NULL, DEFAULT: 0]
+  created_at TIMESTAMP [NOT NULL, DEFAULT: `now()`]
+  updated_at TIMESTAMP
+  deleted_at TIMESTAMP
+}
+
+Table jwt_refresh_tokens {
+  token        TEXT [NOT NULL]
+  user_id      uuid [NOT NULL]
+  ignore_after TIMESTAMP [NOT NULL]
+}
+
+Ref: jwt_refresh_tokens.user_id > users.id

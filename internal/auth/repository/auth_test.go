@@ -5,11 +5,19 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/prajnasatryass/tic-be/internal/auth/domain"
+	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
+	mockTokenUtil "github.com/prajnasatryass/tic-be/mocks/pkg/tokenutil"
+	"github.com/prajnasatryass/tic-be/pkg/tokenutil"
 	"reflect"
 	"testing"
 )
 
 var (
+	inputUser = userDomain.User{
+		Email:    "user@ticindo.com",
+		Password: "123",
+	}
+
 	queryRefreshToken = "refresh_token"
 	queryUserID       = uuid.New()
 
@@ -34,7 +42,8 @@ func TestNewAuthRepository(t *testing.T) {
 				db: nil,
 			},
 			want: &authRepository{
-				db: nil,
+				db:        nil,
+				tokenUtil: tokenutil.NewTokenUtil(),
 			},
 		},
 	}
@@ -42,6 +51,120 @@ func TestNewAuthRepository(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewAuthRepository(tt.args.db); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewAuthRepository() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_authRepository_CreateAccessToken(t *testing.T) {
+	mockTestTokenUtil := mockTokenUtil.NewMockTokenUtil(t)
+
+	type fields struct {
+		db        *sqlx.DB
+		tokenUtil tokenutil.TokenUtil
+	}
+	type args struct {
+		user   *userDomain.User
+		secret string
+		ttl    int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		pre     func()
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				db:        nil,
+				tokenUtil: mockTestTokenUtil,
+			},
+			args: args{
+				user:   &inputUser,
+				secret: "",
+				ttl:    0,
+			},
+			pre: func() {
+				mockTestTokenUtil.EXPECT().CreateAccessToken(&inputUser, "", 0).Return("", nil).Once()
+			},
+			want:    "",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ar := &authRepository{
+				db:        tt.fields.db,
+				tokenUtil: tt.fields.tokenUtil,
+			}
+			tt.pre()
+			got, err := ar.CreateAccessToken(tt.args.user, tt.args.secret, tt.args.ttl)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CreateAccessToken() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("CreateAccessToken() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_authRepository_CreateRefreshToken(t *testing.T) {
+	mockTestTokenUtil := mockTokenUtil.NewMockTokenUtil(t)
+
+	type fields struct {
+		db        *sqlx.DB
+		tokenUtil tokenutil.TokenUtil
+	}
+	type args struct {
+		user   *userDomain.User
+		secret string
+		ttl    int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		pre     func()
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				db:        nil,
+				tokenUtil: mockTestTokenUtil,
+			},
+			args: args{
+				user:   &inputUser,
+				secret: "",
+				ttl:    0,
+			},
+			pre: func() {
+				mockTestTokenUtil.EXPECT().CreateRefreshToken(&inputUser, "", 0).Return("", nil).Once()
+			},
+			want:    "",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ar := &authRepository{
+				db:        tt.fields.db,
+				tokenUtil: tt.fields.tokenUtil,
+			}
+			tt.pre()
+			got, err := ar.CreateRefreshToken(tt.args.user, tt.args.secret, tt.args.ttl)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CreateRefreshToken() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("CreateRefreshToken() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

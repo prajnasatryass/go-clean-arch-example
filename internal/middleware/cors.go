@@ -7,5 +7,5 @@ import (
 
 var corsConfig = echoMiddleware.CORSConfig{
 	AllowOrigins: []string{"*"},
-	AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete},
+	AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPatch, http.MethodPut, http.MethodDelete},
 }

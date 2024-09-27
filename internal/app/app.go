@@ -44,7 +44,7 @@ func (app *App) init() {
 		return c.String(http.StatusOK, "pong")
 	})
 	app.echo.GET("/protected", func(c echo.Context) error {
-		return c.String(http.StatusOK, "authenticated")
+		return c.String(http.StatusOK, "authorized")
 	}, middleware.JWTAuth(app.cfg))
 
 	egAPI := app.echo.Group("/api")
@@ -58,7 +58,7 @@ func (app *App) init() {
 	authV1.NewAuthController(egAPIV1Auth, authUC)
 
 	userUC := userUsecase.NewUserUsecase(userRepo)
-	egAPIV1User := egAPIV1.Group("/user")
+	egAPIV1User := egAPIV1.Group("/user", middleware.JWTAuth(app.cfg))
 	userV1.NewUserController(egAPIV1User, userUC)
 }
 
