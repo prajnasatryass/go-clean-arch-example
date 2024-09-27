@@ -31,12 +31,12 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "prajnasatryass@gmail.com",
+									"value": "user_2@example.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "hahahihi",
+									"value": "pwpw123123",
 									"type": "text"
 								}
 							]
@@ -185,12 +185,12 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "prajnasss@ymail.com",
+									"value": "user@example.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "lalalili",
+									"value": "pw123",
 									"type": "text"
 								}
 							]
