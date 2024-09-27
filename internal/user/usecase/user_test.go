@@ -4,18 +4,18 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/google/uuid"
-	"github.com/prajnasatryass/tic-be/internal/user/domain"
-	mockUserDomain "github.com/prajnasatryass/tic-be/mocks/internal_/user/domain"
-	mockHasher "github.com/prajnasatryass/tic-be/mocks/pkg/hasher"
-	"github.com/prajnasatryass/tic-be/pkg/constants"
-	"github.com/prajnasatryass/tic-be/pkg/hasher"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	mockUserDomain "github.com/prajnasatryass/go-clean-arch-example/mocks/internal_/user/domain"
+	mockHasher "github.com/prajnasatryass/go-clean-arch-example/mocks/pkg/hasher"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/constants"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/hasher"
 	"reflect"
 	"testing"
 )
 
 var (
 	inputUser = domain.User{
-		Email:    "user@ticindo.com",
+		Email:    "user@example.com",
 		Password: "123",
 	}
 	hashedPassword = "$2a$10$f8Ysjht6jVtmpCZHKONOqemdBaSfJdxKEtrBnwnSWprWBYhx3Kiee" // 123

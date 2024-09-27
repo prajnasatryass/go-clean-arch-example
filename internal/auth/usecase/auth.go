@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/labstack/gommon/log"
-	"github.com/prajnasatryass/tic-be/config"
-	"github.com/prajnasatryass/tic-be/internal/auth/domain"
-	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
-	"github.com/prajnasatryass/tic-be/pkg/apperror"
-	"github.com/prajnasatryass/tic-be/pkg/hasher"
+	"github.com/prajnasatryass/go-clean-arch-example/config"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/auth/domain"
+	userDomain "github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/apperror"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/hasher"
 	"time"
 )
 

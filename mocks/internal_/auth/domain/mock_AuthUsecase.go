@@ -3,7 +3,7 @@
 package domain
 
 import (
-	domain "github.com/prajnasatryass/tic-be/internal/auth/domain"
+	domain "github.com/prajnasatryass/go-clean-arch-example/internal/auth/domain"
 	mock "github.com/stretchr/testify/mock"
 )
 

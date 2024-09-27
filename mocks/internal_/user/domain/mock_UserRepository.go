@@ -3,8 +3,8 @@
 package domain
 
 import (
-	domain "github.com/prajnasatryass/tic-be/internal/user/domain"
-	constants "github.com/prajnasatryass/tic-be/pkg/constants"
+	domain "github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	constants "github.com/prajnasatryass/go-clean-arch-example/pkg/constants"
 
 	mock "github.com/stretchr/testify/mock"
 

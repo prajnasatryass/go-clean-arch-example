@@ -3,7 +3,7 @@
 package tokenutil
 
 import (
-	domain "github.com/prajnasatryass/tic-be/internal/user/domain"
+	domain "github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
 	mock "github.com/stretchr/testify/mock"
 )
 

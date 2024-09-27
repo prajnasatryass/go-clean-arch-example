@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/google/uuid"
-	"github.com/prajnasatryass/tic-be/config"
-	"github.com/prajnasatryass/tic-be/internal/auth/domain"
-	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
-	mockDomain "github.com/prajnasatryass/tic-be/mocks/internal_/auth/domain"
-	mockUserDomain "github.com/prajnasatryass/tic-be/mocks/internal_/user/domain"
-	mockHasher "github.com/prajnasatryass/tic-be/mocks/pkg/hasher"
-	"github.com/prajnasatryass/tic-be/pkg/hasher"
+	"github.com/prajnasatryass/go-clean-arch-example/config"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/auth/domain"
+	userDomain "github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	mockDomain "github.com/prajnasatryass/go-clean-arch-example/mocks/internal_/auth/domain"
+	mockUserDomain "github.com/prajnasatryass/go-clean-arch-example/mocks/internal_/user/domain"
+	mockHasher "github.com/prajnasatryass/go-clean-arch-example/mocks/pkg/hasher"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/hasher"
 	"github.com/stretchr/testify/mock"
 	"reflect"
 	"testing"
@@ -25,13 +25,13 @@ var (
 	}
 
 	inputUser = userDomain.User{
-		Email:    "user@ticindo.com",
+		Email:    "user@example.com",
 		Password: "123",
 	}
 	userID    = uuid.New()
 	matchUser = userDomain.User{
 		ID:       userID,
-		Email:    "user@ticindo.com",
+		Email:    "user@example.com",
 		Password: "$2a$10$f8Ysjht6jVtmpCZHKONOqemdBaSfJdxKEtrBnwnSWprWBYhx3Kiee", // 123
 	}
 

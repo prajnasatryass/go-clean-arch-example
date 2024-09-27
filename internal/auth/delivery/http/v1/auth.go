@@ -2,9 +2,9 @@ package v1
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/prajnasatryass/tic-be/internal/auth/domain"
-	"github.com/prajnasatryass/tic-be/pkg/apperror"
-	"github.com/prajnasatryass/tic-be/pkg/appresponse"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/auth/domain"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/apperror"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/appresponse"
 	"net/http"
 )
 

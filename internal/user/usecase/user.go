@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/prajnasatryass/tic-be/internal/user/domain"
-	"github.com/prajnasatryass/tic-be/pkg/apperror"
-	"github.com/prajnasatryass/tic-be/pkg/constants"
-	"github.com/prajnasatryass/tic-be/pkg/hasher"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/apperror"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/constants"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/hasher"
 )
 
 var (

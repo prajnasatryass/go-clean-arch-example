@@ -1,4 +1,6 @@
-## TIC API
+# Go Clean Architecture Example
 
 Project structure based on:\
-<a href="github.com/DoWithLogic/golang-clean-architecture">github.com/DoWithLogic/golang-clean-architecture</a>
+[github.com/DoWithLogic/golang-clean-architecture](https://github.com/DoWithLogic/golang-clean-architecture)
+
+TODO

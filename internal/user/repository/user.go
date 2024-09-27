@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/prajnasatryass/tic-be/internal/user/domain"
-	"github.com/prajnasatryass/tic-be/pkg/constants"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/constants"
 )
 
 type userRepository struct {

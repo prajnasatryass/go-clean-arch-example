@@ -2,7 +2,7 @@ package domain
 
 import (
 	"github.com/google/uuid"
-	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
+	userDomain "github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
 	"time"
 )
 

@@ -3,8 +3,8 @@
 package domain
 
 import (
-	authdomain "github.com/prajnasatryass/tic-be/internal/auth/domain"
-	domain "github.com/prajnasatryass/tic-be/internal/user/domain"
+	authdomain "github.com/prajnasatryass/go-clean-arch-example/internal/auth/domain"
+	domain "github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
 
 	mock "github.com/stretchr/testify/mock"
 

@@ -3,7 +3,7 @@ package domain
 import (
 	"database/sql"
 	"github.com/google/uuid"
-	"github.com/prajnasatryass/tic-be/pkg/constants"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/constants"
 )
 
 type User struct {

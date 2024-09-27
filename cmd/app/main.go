@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/prajnasatryass/tic-be/config"
-	"github.com/prajnasatryass/tic-be/internal/app"
+	"github.com/prajnasatryass/go-clean-arch-example/config"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/app"
 	"github.com/samber/lo"
 	"time"
 )

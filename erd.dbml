@@ -3,7 +3,7 @@
 
 // View ERD from: https://dbdiagram.io/d
 
-Project tic_db {
+Project example {
   database_type: 'PostgreSQL'
 }
 

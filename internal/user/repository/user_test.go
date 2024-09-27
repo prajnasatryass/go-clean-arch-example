@@ -4,15 +4,15 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/prajnasatryass/tic-be/internal/user/domain"
-	"github.com/prajnasatryass/tic-be/pkg/constants"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/constants"
 	"reflect"
 	"testing"
 )
 
 var (
 	inputUser = domain.User{
-		Email:    "user@ticindo.com",
+		Email:    "user@example.com",
 		Password: "123",
 	}
 	newUserID   = uuid.New()
@@ -162,7 +162,7 @@ func Test_userRepository_GetByEmail(t *testing.T) {
 	defer db.Close()
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
-	queryEmail := "user@ticindo.com"
+	queryEmail := "user@example.com"
 
 	type fields struct {
 		db *sqlx.DB

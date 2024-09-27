@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
-	"github.com/prajnasatryass/tic-be/config"
-	"github.com/prajnasatryass/tic-be/pkg/apperror"
-	"github.com/prajnasatryass/tic-be/pkg/appresponse"
-	"github.com/prajnasatryass/tic-be/pkg/constants"
+	"github.com/prajnasatryass/go-clean-arch-example/config"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/apperror"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/appresponse"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/constants"
 	"time"
 )
 

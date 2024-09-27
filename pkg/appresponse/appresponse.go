@@ -3,7 +3,7 @@ package appresponse
 import (
 	"errors"
 	"github.com/labstack/echo/v4"
-	"github.com/prajnasatryass/tic-be/pkg/apperror"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/apperror"
 	"net/http"
 	"slices"
 )

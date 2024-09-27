@@ -2,6 +2,6 @@ with-expecter: True
 dir: mocks/{{ replaceAll .InterfaceDirRelative "internal" "internal_" }}
 all: True
 packages:
-  github.com/prajnasatryass/tic-be:
+  github.com/prajnasatryass/go-clean-arch-example:
     config:
       recursive: True

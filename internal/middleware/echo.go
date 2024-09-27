@@ -4,7 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
-	"github.com/prajnasatryass/tic-be/config"
+	"github.com/prajnasatryass/go-clean-arch-example/config"
 )
 
 func NewEcho(config config.Config) *echo.Echo {

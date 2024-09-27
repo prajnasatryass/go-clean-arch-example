@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/prajnasatryass/tic-be/internal/auth/domain"
-	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
-	"github.com/prajnasatryass/tic-be/pkg/tokenutil"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/auth/domain"
+	userDomain "github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/tokenutil"
 )
 
 type authRepository struct {

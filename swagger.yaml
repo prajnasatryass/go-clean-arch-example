@@ -1,9 +1,8 @@
 openapi: 3.0.3
 info:
-  title: TIC Inventory Management API
+  title: Example API
   description: |-
     Created 24 September 2024.\
-    Project owner: [TIC Indonesia](https://ticindo.com)\
     Author: [Prajnasatrya Sukur Suryanto](mailto:prajnasss@ymail.com)
   contact:
     email: prajnasss@ymail.com
@@ -197,7 +196,7 @@ components:
       properties:
         email:
           type: string
-          example: user@ticindo.com
+          example: user@example.com
         password:
           type: string
           example: abc123
@@ -215,7 +214,7 @@ components:
       properties:
         email:
           type: string
-          example: user@ticindo.com
+          example: user@example.com
         password:
           type: string
           example: abc123
@@ -233,7 +232,7 @@ components:
           example: 4397a970-ebc6-4e95-a86c-4df76eaa05bb
         email:
           type: string
-          example: user@ticindo.com
+          example: user@example.com
     UpdateUserRoleRequest:
       type: object
       properties:

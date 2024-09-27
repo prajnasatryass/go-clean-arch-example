@@ -1,4 +1,4 @@
-module github.com/prajnasatryass/tic-be
+module github.com/prajnasatryass/go-clean-arch-example
 
 go 1.23.1
 

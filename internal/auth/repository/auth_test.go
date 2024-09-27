@@ -4,17 +4,17 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/prajnasatryass/tic-be/internal/auth/domain"
-	userDomain "github.com/prajnasatryass/tic-be/internal/user/domain"
-	mockTokenUtil "github.com/prajnasatryass/tic-be/mocks/pkg/tokenutil"
-	"github.com/prajnasatryass/tic-be/pkg/tokenutil"
+	"github.com/prajnasatryass/go-clean-arch-example/internal/auth/domain"
+	userDomain "github.com/prajnasatryass/go-clean-arch-example/internal/user/domain"
+	mockTokenUtil "github.com/prajnasatryass/go-clean-arch-example/mocks/pkg/tokenutil"
+	"github.com/prajnasatryass/go-clean-arch-example/pkg/tokenutil"
 	"reflect"
 	"testing"
 )
 
 var (
 	inputUser = userDomain.User{
-		Email:    "user@ticindo.com",
+		Email:    "user@example.com",
 		Password: "123",
 	}
 

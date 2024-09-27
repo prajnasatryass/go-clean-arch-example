@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/prajnasatryass/tic-be/config"
+	"github.com/prajnasatryass/go-clean-arch-example/config"
 )
 
 const (
